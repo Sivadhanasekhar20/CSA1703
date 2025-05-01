@@ -1,0 +1,43 @@
+# Define the environment
+class Environment:
+    def __init__(self):
+        # States can be "clean" or "dirty"
+        self.rooms = {
+            "A": "dirty",
+            "B": "dirty"
+        }
+
+# Define the agent
+class VacuumCleaner:
+    def __init__(self, environment):
+        self.environment = environment
+        self.location = "A"  # Start in room A
+
+    def perceive_and_act(self):
+        # Check the current room
+        current_status = self.environment.rooms[self.location]
+        print(f"Vacuum is in room {self.location} which is {current_status}.")
+
+        if current_status == "dirty":
+            # Clean the room
+            print(f"Cleaning room {self.location}.")
+            self.environment.rooms[self.location] = "clean"
+        else:
+            # Move to the other room
+            self.location = "B" if self.location == "A" else "A"
+            print(f"Moving to room {self.location}.")
+
+# Simulate the environment
+def run_simulation():
+    env = Environment()
+    cleaner = VacuumCleaner(env)
+
+    # Run the cleaner until both rooms are clean
+    for _ in range(10):  # limit the steps to prevent infinite loop
+        if env.rooms["A"] == "clean" and env.rooms["B"] == "clean":
+            print("Both rooms are clean. Stopping.")
+            break
+        cleaner.perceive_and_act()
+
+run_simulation()
+print("192311318--G siva dhana sekhar")
