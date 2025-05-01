@@ -1,0 +1,46 @@
+import itertools
+
+# Define distance matrix (symmetric)
+# 4 cities: A, B, C, D
+# Distances between cities
+distance_matrix = [
+    [0, 10, 15, 20],   # Distances from A
+    [10, 0, 35, 25],   # From B
+    [15, 35, 0, 30],   # From C
+    [20, 25, 30, 0]    # From D
+]
+
+def calculate_total_distance(path, distance_matrix):
+    total = 0
+    for i in range(len(path) - 1):
+        total += distance_matrix[path[i]][path[i + 1]]
+    # Return to start city
+    total += distance_matrix[path[-1]][path[0]]
+    return total
+
+def tsp_brute_force(distance_matrix):
+    num_cities = len(distance_matrix)
+    cities = list(range(num_cities))
+
+    min_distance = float('inf')
+    best_path = []
+
+    # Try all possible orders (permutations) starting from city 0
+    for perm in itertools.permutations(cities[1:]):  # Fix city 0 as start
+        current_path = [0] + list(perm)
+        current_distance = calculate_total_distance(current_path, distance_matrix)
+        
+        if current_distance < min_distance:
+            min_distance = current_distance
+            best_path = current_path
+
+    return best_path, min_distance
+
+# Run the TSP
+best_path, min_distance = tsp_brute_force(distance_matrix)
+
+# Display results
+city_names = ['A', 'B', 'C', 'D']
+print("Best route:", ' -> '.join(city_names[i] for i in best_path) + f" -> {city_names[best_path[0]]}")
+print("Minimum distance:", min_distance)
+print("192311318-G siva dhana sekhar")
