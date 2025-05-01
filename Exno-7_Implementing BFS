@@ -1,0 +1,46 @@
+# Action: Suck dirt in current location
+    if location == 'A' and roomA == 'dirty':
+        successors.append(('A', 'clean', roomB, 'Suck in A'))
+    elif location == 'B' and roomB == 'dirty':
+        successors.append(('B', roomA, 'clean', 'Suck in B'))
+
+    # Action: Move to the other room
+    if location == 'A':
+        successors.append(('B', roomA, roomB, 'Move to B'))
+    else:
+        successors.append(('A', roomA, roomB, 'Move to A'))
+
+    return successors
+
+def bfs(initial_state):
+    queue = deque()
+    queue.append((initial_state, []))  # state, path
+
+    visited = set()
+
+    while queue:
+        state, path = queue.popleft()
+        state_key = (state[0], state[1], state[2])
+
+        if state_key in visited:
+            continue
+        visited.add(state_key)
+
+        if is_goal(state):
+            return path + [f"Goal reached: {state}"]
+
+        for successor in get_successors(state):
+            new_state = successor[:3]
+            action = successor[3]
+            queue.append((new_state, path + [action]))
+
+    return None
+
+# Initial state: Vacuum in A, both rooms dirty
+initial_state = ('A', 'dirty', 'dirty')
+solution = bfs(initial_state)
+
+print("Solution using BFS:")
+for step in solution:
+    print(step)
+print("192311318-G siva dhana sekhar")
