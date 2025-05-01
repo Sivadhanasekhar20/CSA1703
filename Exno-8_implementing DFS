@@ -1,0 +1,55 @@
+# Define the goal state check
+def is_goal(state):
+    # Goal: both rooms must be clean
+    return state[1] == 'clean' and state[2] == 'clean'
+
+# Define the state transition logic (successor function)
+def get_successors(state):
+    location, roomA, roomB = state
+    successors = []
+
+    # Action: Suck in current location
+    if location == 'A' and roomA == 'dirty':
+        successors.append((('A', 'clean', roomB), 'Suck in A'))
+    elif location == 'B' and roomB == 'dirty':
+        successors.append((('B', roomA, 'clean'), 'Suck in B'))
+
+    # Action: Move to the other room
+    if location == 'A':
+        successors.append((('B', roomA, roomB), 'Move to B'))
+    else:
+        successors.append((('A', roomA, roomB), 'Move to A'))
+
+    return successors
+
+# DFS algorithm
+def dfs(initial_state):
+    stack = [(initial_state, [])]  # Each item is (state, path)
+    visited = set()
+
+    while stack:
+        state, path = stack.pop()
+        state_key = (state[0], state[1], state[2])  # Only the essential state
+
+        if state_key in visited:
+            continue
+        visited.add(state_key)
+
+        if is_goal(state):
+            return path + [f"Goal reached: {state}"]
+
+        # Explore successors (reversed to mimic left-to-right DFS)
+        for new_state, action in reversed(get_successors(state)):
+            stack.append((new_state, path + [action]))
+
+    return ["No solution found"]
+
+# Initial state: vacuum in room A, both rooms dirty
+initial_state = ('A', 'dirty', 'dirty')
+solution = dfs(initial_state)
+
+# Print the solution
+print("Solution using DFS:")
+for step in solution:
+    print(step)
+print("192311318-G siva dhana sekhar")
