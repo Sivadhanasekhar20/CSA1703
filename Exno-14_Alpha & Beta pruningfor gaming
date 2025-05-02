@@ -1,0 +1,67 @@
+print("192311318-G siva dhana sekhar")
+def print_board(b):
+    for r in b: print(" | ".join(r)); print("-"*5)
+
+def winner(b, p):
+    return any(all(b[i][j]==p for j in range(3)) or all(b[j][i]==p for j in range(3)) for i in range(3)) \
+           or all(b[i][i]==p for i in range(3)) or all(b[i][2-i]==p for i in range(3))
+
+def full(b): return all(c != ' ' for r in b for c in r)
+
+def minimax(b, alpha, beta, is_max):
+    if winner(b, 'O'): return 1
+    if winner(b, 'X'): return -1
+    if full(b): return 0
+
+    if is_max:
+        best = -float('inf')
+        for i in range(3):
+            for j in range(3):
+                if b[i][j] == ' ':
+                    b[i][j] = 'O'
+                    best = max(best, minimax(b, alpha, beta, False))
+                    b[i][j] = ' '
+                    alpha = max(alpha, best)
+                    if beta <= alpha: break
+        return best
+    else:
+        best = float('inf')
+        for i in range(3):
+            for j in range(3):
+                if b[i][j] == ' ':
+                    b[i][j] = 'X'
+                    best = min(best, minimax(b, alpha, beta, True))
+                    b[i][j] = ' '
+                    beta = min(beta, best)
+                    if beta <= alpha: break
+        return best
+
+def best_move(b):
+    move, best = None, -float('inf')
+    for i in range(3):
+        for j in range(3):
+            if b[i][j] == ' ':
+                b[i][j] = 'O'
+                val = minimax(b, -float('inf'), float('inf'), False)
+                b[i][j] = ' '
+                if val > best:
+                    best = val
+                    move = (i, j)
+    return move
+
+def play():
+    b = [[' ']*3 for _ in range(3)]
+    while True:
+        print_board(b)
+        r, c = map(int, input("Your move (row col): ").split())
+        if b[r][c] != ' ':
+            print("Invalid! Try again."); continue
+        b[r][c] = 'X'
+        if winner(b, 'X'): print_board(b); print("You win!"); break
+        if full(b): print_board(b); print("Draw!"); break
+        i, j = best_move(b)
+        b[i][j] = 'O'
+        if winner(b, 'O'): print_board(b); print("AI wins!"); break
+        if full(b): print_board(b); print("Draw!"); break
+
+play()
