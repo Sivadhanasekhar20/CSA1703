@@ -1,0 +1,86 @@
+print("192311318-G siva dhana sekhar")
+import math
+import random
+
+# Sigmoid function and its derivative
+def sigmoid(x):
+    return 1 / (1 + math.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# Training data for XOR
+inputs = [
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+]
+outputs = [0, 1, 1, 0]
+
+# Initialize weights randomly
+random.seed(1)
+weights_input_hidden = [[random.random(), random.random()],
+                        [random.random(), random.random()]]  # 2x2
+weights_hidden_output = [random.random(), random.random()]   # 2
+
+bias_hidden = [random.random(), random.random()]
+bias_output = random.random()
+
+# Training parameters
+learning_rate = 0.5
+epochs = 10000
+
+# Training loop
+for epoch in range(epochs):
+    total_error = 0
+    for i in range(len(inputs)):
+        x = inputs[i]
+        target = outputs[i]
+
+        # Forward pass
+        hidden = [0, 0]
+        for j in range(2):
+            hidden[j] = sigmoid(x[0]*weights_input_hidden[0][j] +
+                                x[1]*weights_input_hidden[1][j] +
+                                bias_hidden[j])
+
+        output = sigmoid(hidden[0]*weights_hidden_output[0] +
+                         hidden[1]*weights_hidden_output[1] +
+                         bias_output)
+
+        # Calculate error
+        error = target - output
+        total_error += error ** 2
+
+        # Backpropagation
+        d_output = error * sigmoid_derivative(output)
+
+        d_hidden = [0, 0]
+        for j in range(2):
+            d_hidden[j] = d_output * weights_hidden_output[j] * sigmoid_derivative(hidden[j])
+
+        # Update weights and biases
+        for j in range(2):
+            weights_hidden_output[j] += learning_rate * d_output * hidden[j]
+            bias_output += learning_rate * d_output
+
+            weights_input_hidden[0][j] += learning_rate * d_hidden[j] * x[0]
+            weights_input_hidden[1][j] += learning_rate * d_hidden[j] * x[1]
+            bias_hidden[j] += learning_rate * d_hidden[j]
+
+    if epoch % 1000 == 0:
+        print(f"Epoch {epoch}, Error: {total_error:.4f}")
+
+# Test
+print("\nTesting:")
+for x in inputs:
+    hidden = [sigmoid(x[0]*weights_input_hidden[0][j] +
+                      x[1]*weights_input_hidden[1][j] +
+                      bias_hidden[j]) for j in range(2)]
+
+    output = sigmoid(hidden[0]*weights_hidden_output[0] +
+                     hidden[1]*weights_hidden_output[1] +
+                     bias_output)
+
+    print(f"Input: {x}, Predicted: {round(output):.0f}, Output: {output:.4f}")
